@@ -1,35 +1,22 @@
 import React, {Component} from 'react';
 import {TodoItem} from './TodoItem/TodoItem'
+import axios from 'axios'
 import './App.css';
 
 class App extends Component {
-        state = {
-            todos: [
-                {
-                    id: 1,
-                    name: 'task 1',
-                    completed: false,
-                    editing: false
-                },
-                {
-                    id: 2,
-                    name: 'task 2',
-                    completed: false,
-                    editing: false
-                },
-                {
-                    id: 3,
-                    name: 'task 3',
-                    completed: false,
-                    editing: false
-                }
-            ],
-            newTodo: '',
-            editable: {
-                newVal: '',
-                oldVal: ''
-            }
-        };
+    state = {
+        todos: [],
+        newTodo: '',
+        editable: {
+            newVal: '',
+            oldVal: ''
+        }
+    };
+    componentDidMount() {
+        axios.get(`/api/todos`).then((res) => {
+            this.setState({todos: res.data});
+        });
+    }
     render() {
         let todoItems = this.state.todos.map((todo, index) => {
             return (
