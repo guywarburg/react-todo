@@ -3,7 +3,9 @@ import {TodoItem} from './TodoItem/TodoItem'
 import './App.css';
 
 class App extends Component {
-        state = {
+    constructor() {
+        super();
+        this.state = {
             todos: [
                 {
                     id: 1,
@@ -30,6 +32,8 @@ class App extends Component {
                 oldVal: ''
             }
         };
+    }
+
     render() {
         let todoItems = this.state.todos.map((todo, index) => {
             return (
@@ -72,9 +76,9 @@ class App extends Component {
     }
 
     markItemAsComplete = (item) => {
-        if(item) {
+        if (item) {
             let todoArr = this.state.todos.map(todo => {
-                if(todo.name === item.name) {
+                if (todo.name === item.name) {
                     return Object.assign({}, todo, {completed: !item.completed});
                 } else {
                     return todo;
@@ -96,7 +100,7 @@ class App extends Component {
     };
 
     handleSubmit = (event) => {
-        if(event.key === 'Enter') {
+        if (event.key === 'Enter') {
             const newTodo = {
                 name: this.state.newTodo,
                 completed: false,
@@ -106,9 +110,9 @@ class App extends Component {
         }
     };
     setAsEditable = (item) => {
-        if(item) {
+        if (item) {
             let todoArr = this.state.todos.map(todo => {
-                if(todo.name === item.name) {
+                if (todo.name === item.name) {
                     return Object.assign({}, todo, {editing: !item.editing});
                 } else {
                     return Object.assign({}, todo, {editing: false});
@@ -122,10 +126,10 @@ class App extends Component {
         this.setState({editable: newEditValues});
     };
     handleSubmitEdit = (event) => {
-        if(event.key === 'Enter') {
+        if (event.key === 'Enter') {
             const editItem = this.state.editable.oldVal;
             let todoArr = this.state.todos.map(todo => {
-                if(todo.name === editItem) {
+                if (todo.name === editItem) {
                     return Object.assign({}, todo, {name: this.state.editable.newVal, editing: false});
                 } else {
                     return Object.assign({}, todo, {editing: false});
