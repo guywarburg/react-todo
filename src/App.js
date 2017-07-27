@@ -6,13 +6,16 @@ import {bindActionCreators} from "redux";
 import {TodosActions} from "./actions/todos.actions";
 
 class App extends Component {
-    state = {
-        newTodo: '',
-        editable: {
-            newVal: '',
-            oldVal: ''
-        }
-    };
+    constructor() {
+        super();
+        this.state = {
+            newTodo: '',
+            editable: {
+                newVal: '',
+                oldVal: ''
+            }
+        };
+    }
     componentDidMount() {
         this.props.dispatch({
             type: TodosActions.FETCH_TODOS
