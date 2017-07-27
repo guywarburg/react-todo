@@ -117,13 +117,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(todoActions), dispatch
+        actions: bindActionCreators(todoActions),
+        dispatch
     };
 }
-
-// export default connect(
-//     mapStateToProps,
-//     mapDispatchToProps
-// )(App);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

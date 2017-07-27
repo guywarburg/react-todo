@@ -31,14 +31,6 @@ export const clearCompleted = () => {
     }
 };
 
-// export const addTodo = (newItem) => {
-//     const newTodo = Object.assign({}, newItem, {id: nextTodoId++});
-//     return {
-//         type: types.ADD,
-//         newTodo
-//     }
-// };
-
 export const addTodo = (newItem) => {
     const newTodo = Object.assign({}, newItem, {id: ++nextTodoId});
     return dispatch => {
