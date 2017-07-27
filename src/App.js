@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {TodoItem} from './TodoItem/TodoItem'
 import './App.css';
 import {bindActionCreators} from "redux";
-import {TodosActions} from "./actions/todos.actions";
+import * as todoActions from "./actions/todos.actions";
 
 class App extends Component {
     constructor() {
@@ -17,9 +17,7 @@ class App extends Component {
         };
     }
     componentDidMount() {
-        this.props.dispatch({
-            type: TodosActions.FETCH_TODOS
-        });
+        this.props.dispatch(todoActions.fetchAllTodos());
     }
     render() {
         let todoItems = this.props.todos.map((todo, index) => {
@@ -63,21 +61,11 @@ class App extends Component {
     }
 
     markItemAsComplete = (item) => {
-        const i = this.props.todos.indexOf(this.props.todos.find(todo => {
-            return todo.name === item.name}));
-        this.props.dispatch({
-            type: TodosActions.MARK_AS_COMPLETE,
-            payload: {item, i}
-        });
+        this.props.dispatch(todoActions.markAsCompleted(item));
     };
 
     removeItem = (item) => {
-        const i = this.props.todos.indexOf(this.props.todos.find(todo => {
-            return todo.name === item.name}));
-        this.props.dispatch({
-            type: TodosActions.DELETE,
-            payload: {item, i}
-        });
+        this.props.dispatch(todoActions.removeTodo(item));
     };
 
     handleNewTodo = (event) => {
@@ -92,51 +80,32 @@ class App extends Component {
                 editing: false
             };
             this.setState({newTodo: ''});
-            this.props.dispatch({
-                type: TodosActions.ADD,
-                payload: newTodo
-            });
+            this.props.dispatch(todoActions.addTodo(newTodo));
         }
     };
     setAsEditable = (item) => {
-        if(item) {
-            let todoArr = this.props.todos.map(todo => {
-                if(todo.name === item.name) {
-                    return Object.assign({}, todo, {editing: !item.editing});
-                } else {
-                    return Object.assign({}, todo, {editing: false});
-                }
-            });
-            this.setState({todos: todoArr, editable: {newVal: item.name, oldVal: item.name}});
-        }
+        this.props.dispatch(todoActions.setAsEditable(item));
+        this.setState({editable: {newVal: item.name, oldVal: item.name}});
     };
     handleEditItem = (event) => {
         const newEditValues = Object.assign({}, this.state.editable, {newVal: event.target.value});
         this.setState({editable: newEditValues});
     };
     handleSubmitEdit = (event) => {
+        const editItem = this.props.todos.find(todo => {
+            return todo.name === this.state.editable.oldVal;
+        });
+        console.log('editItem', editItem);
         if(event.key === 'Enter') {
-            const editItem = this.state.editable.oldVal;
-            let todoArr = this.state.todos.map(todo => {
-                if(todo.name === editItem) {
-                    return Object.assign({}, todo, {name: this.state.editable.newVal, editing: false});
-                } else {
-                    return Object.assign({}, todo, {editing: false});
-                }
-            });
-            this.setState({todos: todoArr, editable: {newVal: '', oldVal: ''}});
+            this.props.dispatch(todoActions.editTodoLabel(editItem, this.state.editable.newVal));
+            this.setState({editable: {newVal: '', oldVal: ''}});
         } else if (event.keyCode === 27 || event.type === 'blur') {
-            let todoArr = this.state.todos.map(todo => {
-                return Object.assign({}, todo, {editing: false});
-            });
-            this.setState({todos: todoArr, editable: {newVal: '', oldVal: ''}});
+            this.props.dispatch(todoActions.setAsNotEditable());
+            this.setState({editable: {newVal: '', oldVal: ''}});
         }
     };
     clearCompleted = () => {
-        const filteredTodos = this.state.todos.filter(todo => {
-            return !todo.completed;
-        });
-        this.setState({todos: filteredTodos});
+        this.props.dispatch(todoActions.clearCompleted());
     }
 }
 
@@ -148,7 +117,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(TodosActions), dispatch
+        actions: bindActionCreators(todoActions), dispatch
     };
 }
 
