@@ -12,7 +12,7 @@ export class TodoItem extends Component {
                     <input type="checkbox"
                            className="toggle"
                            checked={this.props.todo.completed}
-                           onClick={this.handleChange}/>
+                           onChange={this.handleChange}/>
                     <label className={this.props.todo.completed ? 'completed' : ''}
                         onClick={this.setAsEditable}>{ this.props.todo.name}</label>
                     <button className="destroy" onClick={this.handleDestroy} />

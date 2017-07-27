@@ -1,0 +1,8 @@
+export const TodosActions = {
+    'FETCH_TODOS': 'FETCH_TODOS',
+    'ADD': 'ADD',
+    'MARK_AS_COMPLETE': 'MARK_AS_COMPLETE',
+    'DELETE' : 'DELETE',
+    'UPDATE_TODO_NAME': 'UPDATE_TODO_NAME',
+    'CLEAR_COMPLETED': 'CLEAR_COMPLETED'
+};

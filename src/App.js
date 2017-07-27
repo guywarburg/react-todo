@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import {TodoItem} from './TodoItem/TodoItem'
-import axios from 'axios'
 import './App.css';
+import {bindActionCreators} from "redux";
+import {TodosActions} from "./actions/todos.actions";
 
 class App extends Component {
     state = {
-        todos: [],
         newTodo: '',
         editable: {
             newVal: '',
@@ -13,12 +14,12 @@ class App extends Component {
         }
     };
     componentDidMount() {
-        axios.get(`/api/todos`).then((res) => {
-            this.setState({todos: res.data});
+        this.props.dispatch({
+            type: TodosActions.FETCH_TODOS
         });
     }
     render() {
-        let todoItems = this.state.todos.map((todo, index) => {
+        let todoItems = this.props.todos.map((todo, index) => {
             return (
                 <TodoItem
                     key={index}
@@ -30,8 +31,8 @@ class App extends Component {
                     handleEditItem={this.handleEditItem}
                     handleSubmitEdit={this.handleSubmitEdit}/>)
         });
-        const completedTodoos = this.state.todos.filter(todo => todo.completed).length;
-        const totalTodoos = this.state.todos.length;
+        const completedTodoos = this.props.todos.filter(todo => todo.completed).length;
+        const totalTodoos = this.props.todos.length;
         return (
             <div>
                 <section className="todoapp">
@@ -59,23 +60,21 @@ class App extends Component {
     }
 
     markItemAsComplete = (item) => {
-        if(item) {
-            let todoArr = this.state.todos.map(todo => {
-                if(todo.name === item.name) {
-                    return Object.assign({}, todo, {completed: !item.completed});
-                } else {
-                    return todo;
-                }
-            });
-            this.setState({todos: todoArr});
-        }
+        const i = this.props.todos.indexOf(this.props.todos.find(todo => {
+            return todo.name === item.name}));
+        this.props.dispatch({
+            type: TodosActions.MARK_AS_COMPLETE,
+            payload: {item, i}
+        });
     };
 
     removeItem = (item) => {
-        const todoArr = this.state.todos.filter(todo => {
-            return todo.name !== item.name;
+        const i = this.props.todos.indexOf(this.props.todos.find(todo => {
+            return todo.name === item.name}));
+        this.props.dispatch({
+            type: TodosActions.DELETE,
+            payload: {item, i}
         });
-        this.setState({todos: todoArr});
     };
 
     handleNewTodo = (event) => {
@@ -89,12 +88,16 @@ class App extends Component {
                 completed: false,
                 editing: false
             };
-            this.setState({todos: this.state.todos.concat(newTodo), newTodo: ''});
+            this.setState({newTodo: ''});
+            this.props.dispatch({
+                type: TodosActions.ADD,
+                payload: newTodo
+            });
         }
     };
     setAsEditable = (item) => {
         if(item) {
-            let todoArr = this.state.todos.map(todo => {
+            let todoArr = this.props.todos.map(todo => {
                 if(todo.name === item.name) {
                     return Object.assign({}, todo, {editing: !item.editing});
                 } else {
@@ -134,7 +137,21 @@ class App extends Component {
     }
 }
 
+function mapStateToProps(state) {
+    return {
+        todos: state.todos
+    };
+}
 
-export default App;
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(TodosActions), dispatch
+    };
+}
 
+// export default connect(
+//     mapStateToProps,
+//     mapDispatchToProps
+// )(App);
 
+export default connect(mapStateToProps, mapDispatchToProps)(App);
